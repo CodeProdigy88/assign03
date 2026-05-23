@@ -3,19 +3,47 @@ package assign03;
 import java.util.Collection;
 import java.util.Comparator;
 
-public class ArraySet<E> implements Set<E> {
 
+
+public class ArraySet<E> implements Set<E> {
+	private E array[];
+	private int size;
+	private Comparator cmp;
+	private boolean hasComparator;
+	
 	public ArraySet() {
-		// TODO
-	}
+		int size = 10;
+		E[] array = (E[]) new Object[size];
+		this.array = array;
+		this.size = size;
+			}
 
 	public ArraySet(Comparator<? super E> cmp) {
-		// TODO
+		int size = 10;
+		E[] array = (E[]) new Object[size];
+		this.array = array;
+		this.size = size;
+		this.cmp = cmp;
+			}
+	
+	@SuppressWarnings("unchecked")
+	public int compare(E item1, E item2) {
+	 return ((Comparable<? super E>) item1).compareTo(item2); 
+	
 	}
+	
+	@SuppressWarnings("unchecked")
+	public int compare(E item) {
+	 return ((Comparable<? super E>) this).compareTo(item); 
+	
+	}
+	public Object binarySearch() {
+        
+    }
+	
 
 	@Override
 	public void add(Object item) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -60,5 +88,7 @@ public class ArraySet<E> implements Set<E> {
 		// TODO Auto-generated method stub
 
 	}
+	
+	
 
 }
