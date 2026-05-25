@@ -118,6 +118,7 @@ public class ArraySet<E> implements Set<E> {
 		for (int i = changeLocation + 1; i < this.size; i++) {
 			holder = this.array[i];
 			this.array[i] = holder;
+			size++;
 		}
 	}
 
@@ -141,8 +142,10 @@ public class ArraySet<E> implements Set<E> {
 	 * @return true if the item is contained in this set; otherwise false
 	 */
 	@Override
-	public boolean contains(Object item) {
-		// TODO Auto-generated method stub
+	public boolean contains(E item) {
+		if (binarySearch(this.array, item) == -1) {
+			return true;
+		}
 		return false;
 	}
 
@@ -155,9 +158,13 @@ public class ArraySet<E> implements Set<E> {
 	 * @return true if all items are contained in this set; otherwise false
 	 */
 	@Override
-	public boolean containsAll(Collection items) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean containsAll(Collection<? extends E> items) {
+		for (E item : items) {
+			if (!contains(item)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -166,18 +173,21 @@ public class ArraySet<E> implements Set<E> {
 	 * @return array containing all elements of the set
 	 */
 	@Override
-	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public E[] toArray() {
+			@SuppressWarnings("unchecked")
+			E[] arrayNew = (E[]) new Object[this.size]; 
+			for (int i = 0; i < this.size-1; i++) {
+				arrayNew[i] = this.array[i];
+			}
+		return arrayNew;
+}
 
 	/**
 	 * @return the number of elements in the set
 	 */
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	/**
@@ -185,8 +195,7 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.size == 0;
 	}
 
 	/**
@@ -194,7 +203,10 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
+		@SuppressWarnings("unchecked")
+		E[] arrayNew = (E[]) new Object[0];
+		this.array = arrayNew;
+		size=0;
 
 	}
 
