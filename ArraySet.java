@@ -20,9 +20,9 @@ public class ArraySet<E> implements Set<E> {
 	 * The constructor of the ArraySet object without a comparator
 	 */
 	public ArraySet() {
-		int size = 10;
+		int size = 0;
 		@SuppressWarnings("unchecked")
-		E[] array = (E[]) new Object[size];
+		E[] array = (E[]) new Object[10];
 		this.array = array;
 		this.size = size;
 	}
@@ -31,9 +31,9 @@ public class ArraySet<E> implements Set<E> {
 	 * The constructor of the ArraySet object with a comparator
 	 */
 	public ArraySet(Comparator<? super E> cmp) {
-		int size = 10;
+		int size = 0;
 		@SuppressWarnings("unchecked")
-		E[] array = (E[]) new Object[size];
+		E[] array = (E[]) new Object[10];
 		this.array = array;
 		this.size = size;
 		this.cmp = cmp;
@@ -59,30 +59,66 @@ public class ArraySet<E> implements Set<E> {
 	}
 
 	/**
-	 * Finds the correct location for an element.
-	 *
-	 * @param item - the element to add
+	 * Finds the correct location of target object
+	 * 
+	 * @param array  - The array to search
+	 * @param target - The object being searched with
+	 * @return The correct int location for the object in sorting order
 	 */
 	public int binarySearch(E[] array, E target) {
 		int lowIndex = 0;
-		int highIndex = this.size - 1;
+		int highIndex = this.size;
+		int targetIndex = lowIndex + (highIndex - lowIndex) / 2;
 
 		while (highIndex >= lowIndex) {
 
 			// Find middle cautiously to avoid too high numbers
-			int targetIndex = lowIndex + (highIndex - lowIndex) / 2;
+			targetIndex = lowIndex + (highIndex - lowIndex) / 2;
 
+			// Gets the compare result (less than 0 target is less, greater than 0 index is
+			// less, 0 if equals
 			int compareResult = this.compare(target, array[targetIndex], this.cmp);
-}
+
+			if (compareResult < 0) {
+				lowIndex = targetIndex + 1;
+			}
+			if (compareResult > 0) {
+				highIndex = targetIndex - 1;
+			}
+			// Returns -1 if it is in the list
+			if (compareResult == 0)
+				return -1;
+		}
+		// Return int of the correct location if sorted
+		return targetIndex;
+	}
 
 	/**
 	 * Adds an element to the set in the correct location.
 	 *
 	 * @param item - the element to add
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
-	public void add(Object item) {
-
+	public void add(E item) {
+		if (this.size == this.array.length) {
+			E[] arrayNew = (E[]) new Object[this.array.length * 2];
+			for (int i = 0; i < this.array.length; i++) {
+				arrayNew[i] = this.array[i];
+			}
+			this.array = arrayNew;
+		}
+		// Call search for correct placement
+		// Move forward every entry after
+		int changeLocation = binarySearch(this.array, item);
+		E holder = this.array[changeLocation];
+		E holder2;
+		this.array[changeLocation] = item;
+		this.array[changeLocation + 1] = item;
+		for (int i = changeLocation + 1; i < this.size; i++) {
+			holder = this.array[i];
+			this.array[i] = holder;
+		}
 	}
 
 	/**
