@@ -85,12 +85,12 @@ public class ArraySet<E> implements Set<E> {
 			if (compareResult > 0) {
 				highIndex = targetIndex - 1;
 			}
-			// Returns -1 if it is in the list
+			// Returns targetIndex once found in the array
 			if (compareResult == 0)
-				return -1;
+				return targetIndex;
 		}
-		// Return int of the correct location if sorted
-		return targetIndex;
+		// Returns -1 if it is not in the array
+		return -1;
 	}
 
 	/**
@@ -98,27 +98,33 @@ public class ArraySet<E> implements Set<E> {
 	 *
 	 * @param item - the element to add
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void add(E item) {
 		if (this.size == this.array.length) {
+			this.increaseSize();
+		}
+		// Call search for correct placement
+		// Move forward every entry after
+		int changeLocation = binarySearch(this.array, item);
+		for (int i = this.array.length; i > changeLocation; i--) {
+			this.array[i + 1] = this.array[i];
+		}
+		size++;
+		this.array[changeLocation] = item;
+	}
+
+	/**
+	 * Helper Method to double array length and copy elements Used in add and remove
+	 *
+	 */
+	public void increaseSize() {
+		{
+			@SuppressWarnings("unchecked")
 			E[] arrayNew = (E[]) new Object[this.array.length * 2];
 			for (int i = 0; i < this.array.length; i++) {
 				arrayNew[i] = this.array[i];
 			}
 			this.array = arrayNew;
-		}
-		// Call search for correct placement
-		// Move forward every entry after
-		int changeLocation = binarySearch(this.array, item);
-		E holder = this.array[changeLocation];
-		E holder2;
-		this.array[changeLocation] = item;
-		this.array[changeLocation + 1] = item;
-		for (int i = changeLocation + 1; i < this.size; i++) {
-			holder = this.array[i];
-			this.array[i] = holder;
-			size++;
 		}
 	}
 
@@ -130,9 +136,20 @@ public class ArraySet<E> implements Set<E> {
 	 * @return the element that was removed if present; otherwise null
 	 */
 	@Override
-	public Object remove(Object item) {
-		// TODO Auto-generated method stub
-		return null;
+	public E remove(E item) {
+		if (this.size == this.array.length) {
+			this.increaseSize();
+		}
+		int changeLocation = binarySearch(this.array, item);
+		if (changeLocation == -1) {
+			return null;
+		}
+		for (int i = changeLocation + 1; i < this.array.length; i++) {
+			this.array[i - 1] = this.array[i];
+		}
+		size++;
+		this.array[changeLocation] = item;
+		return item;
 	}
 
 	/**
@@ -143,7 +160,7 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public boolean contains(E item) {
-		if (binarySearch(this.array, item) == -1) {
+		if (!(binarySearch(this.array, item) == -1)) {
 			return true;
 		}
 		return false;
@@ -174,20 +191,20 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public E[] toArray() {
-			@SuppressWarnings("unchecked")
-			E[] arrayNew = (E[]) new Object[this.size]; 
-			for (int i = 0; i < this.size-1; i++) {
-				arrayNew[i] = this.array[i];
-			}
+		@SuppressWarnings("unchecked")
+		E[] arrayNew = (E[]) new Object[this.size];
+		for (int i = 0; i < this.size - 1; i++) {
+			arrayNew[i] = this.array[i];
+		}
 		return arrayNew;
-}
+	}
 
 	/**
 	 * @return the number of elements in the set
 	 */
 	@Override
 	public int size() {
-		return size;
+		return this.size;
 	}
 
 	/**
@@ -206,7 +223,7 @@ public class ArraySet<E> implements Set<E> {
 		@SuppressWarnings("unchecked")
 		E[] arrayNew = (E[]) new Object[0];
 		this.array = arrayNew;
-		size=0;
+		size = 0;
 
 	}
 
