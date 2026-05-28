@@ -23,11 +23,13 @@ class ArraySetTest {
 	private ArraySet<Integer> sortedSet;
 	private ArraySet<Integer> unSortedSet;
 	private ArraySet<Integer> oneLengthSet;
-	private Comparator<Integer> reverseComparator;
+	private Comparator<Integer> reverseComparatorInteger;
+	private Comparator<String> reverseComparatorString;
 
 	@BeforeEach
 	void setUp() {
-		reverseComparator = ((u1, u2) -> u2.compareTo(u1));
+		reverseComparatorInteger = ((u1, u2) -> u2.compareTo(u1));
+		reverseComparatorString = ((u1, u2) -> u2.compareTo(u1));
 
 		emptySet = new ArraySet<>();
 
@@ -76,7 +78,7 @@ class ArraySetTest {
 	void testComparator() {
 		ArraySet<Integer> set = new ArraySet<>();
 		set.add(1);
-		ArraySet<Integer> setReverse = new ArraySet<>(reverseComparator);
+		ArraySet<Integer> setReverse = new ArraySet<>(reverseComparatorInteger);
 		setReverse.add(1);
 		assertArrayEquals(set.toArray(), setReverse.toArray());
 		set.add(2);
@@ -84,6 +86,15 @@ class ArraySetTest {
 		Object[] array1 = set.toArray();
 		Object[] array2 = setReverse.toArray();
 		assertNotEquals(array1[0], array2[0]);
+	}
+
+	@Test
+	void addExisting() {
+		ArraySet<Integer> set = new ArraySet<>();
+		set.add(1);
+		assertEquals(1, set.size());
+		set.add(1);
+		assertEquals(1, set.size());
 	}
 
 	@Test
@@ -205,7 +216,7 @@ class ArraySetTest {
 
 	@Test
 	void emptySetReverse() {
-		ArraySet<Integer> rEmptySet = new ArraySet<>(reverseComparator);
+		ArraySet<Integer> rEmptySet = new ArraySet<>(reverseComparatorInteger);
 		Object[] actualOrder = rEmptySet.toArray();
 		Object[] reverseOrder = new Object[actualOrder.length];
 		for (int i = actualOrder.length - 1; i >= 0; i--) {
@@ -217,142 +228,168 @@ class ArraySetTest {
 
 	@Test
 	void stringSetOrdering() {
-		//Manually put in the correct order
-		Object[] expectedOrder = {};
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { "april", "august", "december", "february", "january", "july", "june", "march", "may",
+				"november", "october", "september" };
+		Object[] actualOrder = stringSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 
 	}
 
 	@Test
 	void stringSetAdd() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { "april", "august", "december", "february", "january", "july", "june", "march", "may",
+				"monday", "november", "october", "september" };
+		stringSet.add("monday");
+		Object[] actualOrder = stringSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void stringSetRemove() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { "april", "august", "december", "february", "july", "june", "march", "may",
+				"november", "october", "september" };
+		stringSet.remove("january");
+		Object[] actualOrder = stringSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void stringSetReverse() {
-		reverseSet = ;
-		Object[] actualOrder = .toArray();
+		ArraySet<String> rStringSet = new ArraySet<>(reverseComparatorString);
+		rStringSet.add("september");
+		rStringSet.add("october");
+		rStringSet.add("november");
+		rStringSet.add("december");
+		rStringSet.add("january");
+		rStringSet.add("february");
+		rStringSet.add("march");
+		rStringSet.add("april");
+		rStringSet.add("may");
+		rStringSet.add("june");
+		rStringSet.add("july");
+		rStringSet.add("august");
+		Object[] actualOrder = stringSet.toArray();
+		Object[] finalOrder = rStringSet.toArray();
 		Object[] reverseOrder = new Object[actualOrder.length];
-		for(int i = actualOrder.length - 1; i >= 0; i--) {
+		for (int i = actualOrder.length - 1; i >= 0; i--) {
 			reverseOrder[actualOrder.length - 1 - i] = actualOrder[i];
 		}
+		assertArrayEquals(finalOrder, reverseOrder);
 	}
 
 	@Test
 	void sortedSetOrdering() {
-		//Manually put in the correct order
-		Object[] expectedOrder = {};
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 1, 2, 3, 4, 5 };
+		Object[] actualOrder = sortedSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 
 	}
 
 	@Test
 	void sortedSetAdd() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 0, 1, 2, 3, 4, 5 };
+		sortedSet.add(0);
+		Object[] actualOrder = sortedSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
+
 	}
 
 	@Test
 	void sortedSetRemove() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 2, 3, 4, 5 };
+		sortedSet.remove(1);
+		Object[] actualOrder = sortedSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void sortedSetReverse() {
-		reverseSet = ;
-		Object[] actualOrder = .toArray();
+		ArraySet<Integer> rSortedSet = new ArraySet<>(reverseComparatorInteger);
+		rSortedSet.add(1);
+		rSortedSet.add(2);
+		rSortedSet.add(3);
+		rSortedSet.add(4);
+		rSortedSet.add(5);
+		Object[] actualOrder = sortedSet.toArray();
+		Object[] finalOrder = rSortedSet.toArray();
 		Object[] reverseOrder = new Object[actualOrder.length];
-		for(int i = actualOrder.length - 1; i >= 0; i--) {
+		for (int i = actualOrder.length - 1; i >= 0; i--) {
 			reverseOrder[actualOrder.length - 1 - i] = actualOrder[i];
 		}
+		assertArrayEquals(finalOrder, reverseOrder);
 	}
 
 	@Test
 	void unSortedSetOrdering() {
-		//Manually put in the correct order
-		Object[] expectedOrder = {};
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 1, 2, 3, 4, 5 };
+		Object[] actualOrder = unSortedSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 
 	}
 
 	@Test
 	void unSortedSetAdd() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 0, 1, 2, 3, 4, 5 };
+		unSortedSet.add(0);
+		Object[] actualOrder = unSortedSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void unSortedSetRemove() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 2, 3, 4, 5 };
+		unSortedSet.remove(1);
+		Object[] actualOrder = unSortedSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void unSortedSetReverse() {
-		reverseSet = ;
-		Object[] actualOrder = .toArray();
+		ArraySet<Integer> rSortedSet = new ArraySet<>(reverseComparatorInteger);
+		rSortedSet.add(1);
+		rSortedSet.add(2);
+		rSortedSet.add(3);
+		rSortedSet.add(4);
+		rSortedSet.add(5);
+		Object[] actualOrder = unSortedSet.toArray();
+		Object[] finalOrder = rSortedSet.toArray();
 		Object[] reverseOrder = new Object[actualOrder.length];
-		for(int i = actualOrder.length - 1; i >= 0; i--) {
+		for (int i = actualOrder.length - 1; i >= 0; i--) {
 			reverseOrder[actualOrder.length - 1 - i] = actualOrder[i];
 		}
+		assertArrayEquals(finalOrder, reverseOrder);
 	}
 
 	@Test
 	void oneLengthSetOrdering() {
-		//Manually put in the correct order
-		Object[] expectedOrder = {};
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 100 };
+		Object[] actualOrder = oneLengthSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
-
 	}
 
 	@Test
 	void oneLengthSetAdd() {
-		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		Object[] expectedOrder = { 100, 200 };
+		oneLengthSet.add(200);
+		Object[] actualOrder = oneLengthSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void oneLengthSetRemove() {
 		Object[] expectedOrder = {};
-		.add()
-		Object[] actualOrder = .toArray();
+		oneLengthSet.remove(100);
+		Object[] actualOrder = oneLengthSet.toArray();
 		assertArrayEquals(expectedOrder, actualOrder);
 	}
 
 	@Test
 	void oneLengthSetReverse() {
-		reverseSet = ;
-		Object[] actualOrder = .toArray();
-		Object[] reverseOrder = new Object[actualOrder.length];
-		for(int i = actualOrder.length - 1; i >= 0; i--) {
-			reverseOrder[actualOrder.length - 1 - i] = actualOrder[i];
-		}
+		ArraySet<Integer> rOneLengthSet = new ArraySet<>(reverseComparatorInteger);
+		rOneLengthSet.add(100);
+		Object[] expectedOrder = { 100 };
+		assertArrayEquals(expectedOrder, rOneLengthSet.toArray());
+
 	}
 
 }
