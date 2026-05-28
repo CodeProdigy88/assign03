@@ -1,8 +1,7 @@
 package assign03;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 
 import java.util.Comparator;
@@ -23,12 +22,11 @@ class ArraySetTest {
 	private ArraySet<Integer> sortedSet;
 	private ArraySet<Integer> unSortedSet;
 	private ArraySet<Integer> oneLengthSet;
-	private ArraySet<Integer> customRev;
+	private Comparator<Integer> reverseComparator;
 
 	@BeforeEach
 	void setUp() {
-		Comparator<Integer> customRev = ((Comparator<Integer>) (u1, u2) -> u1.compareTo(u2) * -1);
-	
+		reverseComparator = ((u1, u2) -> u2.compareTo(u1));
 
 		emptySet = new ArraySet<>();
 
@@ -66,21 +64,37 @@ class ArraySetTest {
 	}
 
 	@Test
-	void testCreateArray() {
-		ArraySet set = new ArraySet();
-	
-		assertNotEquals(set.customRev() , set);
+	void testSetUp() {
+		assertEquals(emptySet, emptySet);
+
+	}
+
+	@Test
+	void testComparator() {
+		ArraySet<Integer> set = new ArraySet<>();
+		set.add(1);
+		ArraySet<Integer> setReverse = new ArraySet<>(reverseComparator);
+		setReverse.add(1);
+		assertArrayEquals(set.toArray(), setReverse.toArray());
+		set.add(2);
+		setReverse.add(2);
+		Object[] array1 = set.toArray();
+		Object[] array2 = setReverse.toArray();
+		assertNotEquals(array1[0], array2[0]);
 	}
 
 	@Test
 	void testSameArray() {
-		ArraySet set = new ArraySet();
+		ArraySet<Integer> set = new ArraySet<>();
 		set.add(1);
 		set.add(2);
-		ArraySet set2 = new ArraySet();
+		ArraySet<Integer> set2 = new ArraySet<>();
 		set2.add(1);
 		set2.add(2);
-		assertEquals(set.size(), set2.size());
+		assertArrayEquals(set.toArray(), set2.toArray());
 	}
+
+	// Test ideas: Add remove a bunch in a row
+	// check size at increase and decrease point
 
 }

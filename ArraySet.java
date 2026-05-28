@@ -51,7 +51,7 @@ public class ArraySet<E> implements Set<E> {
 	 *         if eqauls
 	 */
 	@SuppressWarnings("unchecked")
-	public int compare(E item1, E item2, Comparator<? super E> cmp) {
+	private int compare(E item1, E item2, Comparator<? super E> cmp) {
 		if (cmp == null) {
 			return ((Comparable<? super E>) item1).compareTo(item2);
 		}
@@ -59,15 +59,17 @@ public class ArraySet<E> implements Set<E> {
 	}
 
 	/**
-	 * Finds the correct location of target object
+	 * Finds the correct location of target object, helper method to add, remove,
+	 * and contains
 	 * 
 	 * @param array  - The array to search
 	 * @param target - The object being searched with
-	 * @return The correct int location for the object in sorting order
+	 * @return The correct sorting location if not in array, -1 if it is in the
+	 *         array
 	 */
-	public int binarySearch(E[] array, E target) {
+	private int binarySearch(E[] array, E target) {
 		int lowIndex = 0;
-		int highIndex = this.size;
+		int highIndex = this.size - 1;
 		int targetIndex = lowIndex + (highIndex - lowIndex) / 2;
 
 		while (highIndex >= lowIndex) {
@@ -79,18 +81,17 @@ public class ArraySet<E> implements Set<E> {
 			// less, 0 if equals
 			int compareResult = this.compare(target, array[targetIndex], this.cmp);
 
-			if (compareResult < 0) {
-				lowIndex = targetIndex + 1;
-			}
 			if (compareResult > 0) {
+				lowIndex = targetIndex + 1;
+			} else if (compareResult < 0) {
 				highIndex = targetIndex - 1;
 			}
-			// Returns targetIndex once found in the array
-			if (compareResult == 0)
-				return targetIndex;
+			// Returns -1 once found in the array
+			else if (compareResult == 0)
+				return -1;
 		}
-		// Returns -1 if it is not in the array
-		return -1;
+		// Returns lower bound if not found in the array
+		return lowIndex;
 	}
 
 	/**
@@ -100,13 +101,16 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public void add(E item) {
-		if (this.size == this.array.length) {
+		if (this.size == this.array.length - 1) {
 			this.increaseSize();
 		}
 		// Call search for correct placement
 		// Move forward every entry after
 		int changeLocation = binarySearch(this.array, item);
-		for (int i = this.array.length; i > changeLocation; i--) {
+		if (changeLocation == -1) {
+			return;
+		}
+		for (int i = this.size - 1; i >= changeLocation; i--) {
 			this.array[i + 1] = this.array[i];
 		}
 		size++;
@@ -117,7 +121,7 @@ public class ArraySet<E> implements Set<E> {
 	 * Helper Method to double array length and copy elements Used in add and remove
 	 *
 	 */
-	public void increaseSize() {
+	private void increaseSize() {
 		{
 			@SuppressWarnings("unchecked")
 			E[] arrayNew = (E[]) new Object[this.array.length * 2];
@@ -137,18 +141,17 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public E remove(E item) {
-		if (this.size == this.array.length) {
-			this.increaseSize();
-		}
 		int changeLocation = binarySearch(this.array, item);
-		if (changeLocation == -1) {
+		if (!(changeLocation == -1)) {
 			return null;
+			// The way this is set up causes problems
 		}
+		this.array[changeLocation] = item;
 		for (int i = changeLocation + 1; i < this.array.length; i++) {
 			this.array[i - 1] = this.array[i];
 		}
-		size++;
-		this.array[changeLocation] = item;
+		size--;
+		// clear tail
 		return item;
 	}
 
@@ -160,7 +163,7 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public boolean contains(E item) {
-		if (!(binarySearch(this.array, item) == -1)) {
+		if (binarySearch(this.array, item) == -1) {
 			return true;
 		}
 		return false;
@@ -193,7 +196,7 @@ public class ArraySet<E> implements Set<E> {
 	public E[] toArray() {
 		@SuppressWarnings("unchecked")
 		E[] arrayNew = (E[]) new Object[this.size];
-		for (int i = 0; i < this.size - 1; i++) {
+		for (int i = 0; i < this.size; i++) {
 			arrayNew[i] = this.array[i];
 		}
 		return arrayNew;
@@ -221,7 +224,7 @@ public class ArraySet<E> implements Set<E> {
 	@Override
 	public void clear() {
 		@SuppressWarnings("unchecked")
-		E[] arrayNew = (E[]) new Object[0];
+		E[] arrayNew = (E[]) new Object[10];
 		this.array = arrayNew;
 		size = 0;
 
