@@ -88,7 +88,7 @@ public class ArraySet<E> implements Set<E> {
 			}
 			// Returns -1 once found in the array
 			else if (compareResult == 0)
-				return -1;
+				return (targetIndex * -1) - 1;
 		}
 		// Returns lower bound if not found in the array
 		return lowIndex;
@@ -142,16 +142,20 @@ public class ArraySet<E> implements Set<E> {
 	@Override
 	public E remove(E item) {
 		int changeLocation = binarySearch(this.array, item);
-		if (!(changeLocation == -1)) {
+		if (changeLocation > 0) {
 			return null;
-			// The way this is set up causes problems
 		}
+		if (this.isEmpty())
+			return null;
+
+		changeLocation++;
+		changeLocation *= -1;
 		this.array[changeLocation] = item;
 		for (int i = changeLocation + 1; i < this.array.length; i++) {
 			this.array[i - 1] = this.array[i];
 		}
+		this.array[size - 1] = null;
 		size--;
-		// clear tail
 		return item;
 	}
 
@@ -163,7 +167,7 @@ public class ArraySet<E> implements Set<E> {
 	 */
 	@Override
 	public boolean contains(E item) {
-		if (binarySearch(this.array, item) == -1) {
+		if (binarySearch(this.array, item) < 0) {
 			return true;
 		}
 		return false;
